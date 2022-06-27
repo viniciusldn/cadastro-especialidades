@@ -1,0 +1,20 @@
+spring:
+    application:
+        name: speciality-app
+    datasource:
+        url: dbc:h2:mem:speciality_database
+        username: speciality-app
+        password: speciality-app!
+        driverClassName: org.h2.Driver
+    jpa:
+      database-platform: org.hibernate.dialect.H2Dialect
+      hibernate.dll-auto: create-drop
+      show-sql: true
+server:
+    port: 8080
+logging:
+  level:
+    '[app.trybe.specialityapp]': INFO
+  file:
+    path: ./logs/speciality-app.log
+    
