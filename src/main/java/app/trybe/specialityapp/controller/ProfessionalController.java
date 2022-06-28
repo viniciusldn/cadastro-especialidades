@@ -1,11 +1,15 @@
 package app.trybe.specialityapp.controller;
 
+import app.trybe.specialityapp.commons.ApplicationError;
 import app.trybe.specialityapp.model.Professional;
 import app.trybe.specialityapp.service.ProfessionalService;
 import java.util.List;
+
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -18,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-@Path("/api/professional")
+@Path("/professional")
 public class ProfessionalController {
 
   @Autowired
@@ -37,9 +41,10 @@ public class ProfessionalController {
     try {
       List<Professional> listProfessionals = service.findAll();
       return Response.ok(listProfessionals).build();
-    } catch (Exception e) {
-      String[] err = e.getMessage().split("†");
-      return Response.status(Integer.parseInt(err[0]), err[1]).build();
+    } catch (NotFoundException e) {
+      ApplicationError error = new ApplicationError(e.getMessage(),
+          Response.Status.NOT_FOUND);
+      return Response.status(error.getStatus()).entity(error).build();
     }
   }
 
@@ -68,9 +73,10 @@ public class ProfessionalController {
     try {
       service.insert(professional);
       return Response.status(201, "Inserido").build();
-    } catch (Exception e) {
-      String[] err = e.getMessage().split("†");
-      return Response.status(Integer.parseInt(err[0]), err[1]).build();
+    } catch (BadRequestException e) {
+      ApplicationError error = new ApplicationError(e.getMessage(),
+          Response.Status.BAD_REQUEST);
+      return Response.status(error.getStatus()).entity(error).build();
     }
   }
 
@@ -88,10 +94,11 @@ public class ProfessionalController {
   public Response edit(@PathParam("id") Integer id, Professional professional) {
     try {
       service.edit(id, professional);
-      return Response.status(201, "Atualizado").build();
-    } catch (Exception e) {
-      String[] err = e.getMessage().split("†");
-      return Response.status(Integer.parseInt(err[0]), err[1]).build();
+      return Response.status(200, "Atualizado").build();
+    } catch (NotFoundException e) {
+      ApplicationError error = new ApplicationError(e.getMessage(),
+          Response.Status.NOT_FOUND);
+      return Response.status(error.getStatus()).entity(error).build();
     }
   }
 
@@ -108,10 +115,11 @@ public class ProfessionalController {
     try {
       service.delete(id);
       String message = String.format("ID [%d] removido", id);
-      return Response.status(201, message).build();
-    } catch (Exception e) {
-      String[] err = e.getMessage().split("†");
-      return Response.status(Integer.parseInt(err[0]), err[1]).build();
+      return Response.status(200, message).build();
+    } catch (NotFoundException e) {
+      ApplicationError error = new ApplicationError(e.getMessage(),
+          Response.Status.NOT_FOUND);
+      return Response.status(error.getStatus()).entity(error).build();
     }
   }
 
